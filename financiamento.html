@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCalc — Financiamento Agrícola</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <header class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">🌱 AgroCalc</a>
+      <nav>
+        <a href="index.html">Início</a>
+        <a href="custo.html">Custo</a>
+        <a href="financiamento.html" class="ativo">Financiamento</a>
+        <a href="conversor.html">Conversor</a>
+        <a href="talhoes.html">Talhões</a>
+        <a href="blend.html">Blend NPK</a>
+        <button id="btn-dark" onclick="alternarDark()">🌙 Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ========== CONTEÚDO PRINCIPAL ========== -->
+  <main class="container">
+    <section class="secao">
+      <h2 class="secao-titulo">💰 Simulador de Financiamento Agrícola</h2>
+
+      <!-- Fórmula exibida para o professor -->
+      <p>
+        Utiliza <strong>juros compostos</strong>: <code>M = P × (1 + i)^n</code>, onde
+        <strong>P</strong> = principal, <strong>i</strong> = taxa mensal e <strong>n</strong> = número de parcelas.
+        A parcela é calculada pela fórmula Price: <code>PMT = P × i / (1 − (1 + i)^−n)</code>.
+      </p>
+
+      <!-- ===== FORMULÁRIO ===== -->
+      <div class="card-modulo" style="max-width: 560px; margin-top: 2rem;">
+
+        <div class="form-grupo">
+          <label for="principal">Valor Financiado (R$)</label>
+          <input type="number" id="principal" placeholder="Ex: 50000" min="1" step="0.01" />
+        </div>
+
+        <div class="form-grupo">
+          <label for="taxa">Taxa de Juros Anual (%)</label>
+          <input type="number" id="taxa" placeholder="Ex: 7.5" min="0.01" step="0.01" />
+        </div>
+
+        <div class="form-grupo">
+          <label for="prazo">Prazo (meses)</label>
+          <input type="number" id="prazo" placeholder="Ex: 36" min="1" step="1" />
+        </div>
+
+        <div class="form-grupo">
+          <label for="carencia">Carência (meses) <small>— opcional</small></label>
+          <input type="number" id="carencia" placeholder="Ex: 6" min="0" step="1" value="0" />
+        </div>
+
+        <button class="btn btn-primario" onclick="calcularFinanciamento()">Simular</button>
+      </div>
+
+      <!-- ===== RESULTADO ===== -->
+      <div class="resultado" id="resultado-fin">
+        <h3>📊 Resumo do Financiamento</h3>
+
+        <div class="tabela-wrap" style="margin-top:1rem;">
+          <table>
+            <thead><tr><th>Indicador</th><th>Valor</th></tr></thead>
+            <tbody id="tabela-fin"></tbody>
+          </table>
+        </div>
+
+        <div style="margin-top:1.5rem;">
+          <h3>📈 Principal vs Juros Totais</h3>
+          <div id="grafico-fin" style="margin-top:1rem; display:flex; flex-direction:column; gap:0.6rem;"></div>
+        </div>
+
+        <div style="margin-top:2rem;">
+          <h3>📋 Tabela de Amortização</h3>
+          <div class="tabela-wrap" style="margin-top:1rem; max-height:320px; overflow-y:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Parcela (R$)</th>
+                  <th>Juros (R$)</th>
+                  <th>Amortização (R$)</th>
+                  <th>Saldo Devedor (R$)</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-amort"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SEÇÃO EXPLICATIVA ========== -->
+    <section class="secao">
+      <h2 class="secao-titulo">Juros Compostos na Agricultura</h2>
+      <p>
+        No financiamento rural, os juros incidem sobre o saldo devedor restante a cada período.
+        A <strong>Tabela Price</strong> garante parcelas iguais durante todo o contrato,
+        facilitando o planejamento do fluxo de caixa da propriedade.
+      </p>
+      <p>
+        Linhas de crédito como o <strong>Pronaf</strong> e o <strong>Pronamp</strong> oferecem
+        taxas subsidiadas entre 5% e 10% ao ano, viabilizando investimentos em máquinas,
+        insumos e infraestrutura rural.
+      </p>
+    </section>
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer>
+    <div class="container">
+      <p>AgroCalc Web &copy; 2025 — Projeto Integrador | HTML/CSS · Computação · Matemática Aplicada</p>
+    </div>
+  </footer>
+
+  <script>
+    // --- Dark mode persistente ---
+    if (localStorage.getItem('dark') === 'true') {
+      document.body.classList.add('dark');
+      document.getElementById('btn-dark').textContent = '☀️ Light';
+    }
+    function alternarDark() {
+      const ativo = document.body.classList.toggle('dark');
+      document.getElementById('btn-dark').textContent = ativo ? '☀️ Light' : '🌙 Dark';
+      localStorage.setItem('dark', ativo);
+    }
+
+    function calcularFinanciamento() {
+      const P         = parseFloat(document.getElementById('principal').value) || 0;
+      const taxaAnual = parseFloat(document.getElementById('taxa').value)      || 0;
+      const n         = parseInt(document.getElementById('prazo').value)       || 0;
+      const carencia  = parseInt(document.getElementById('carencia').value)    || 0;
+
+      if (P <= 0 || taxaAnual <= 0 || n <= 0) {
+        alert('Preencha valor, taxa e prazo corretamente.');
+        return;
+      }
+
+      // Converte taxa anual para mensal efetiva
+      const i = Math.pow(1 + taxaAnual / 100, 1 / 12) - 1;
+
+      // Fórmula Price para parcela fixa
+      const PMT = P * i / (1 - Math.pow(1 + i, -n));
+
+      const totalPago  = PMT * n;
+      const totalJuros = totalPago - P;
+
+      // Resumo
+      document.getElementById('tabela-fin').innerHTML = `
+        <tr><td>Valor Financiado</td><td>R$ ${fmt(P)}</td></tr>
+        <tr><td>Taxa Mensal Efetiva</td><td>${(i * 100).toFixed(4)}% a.m.</td></tr>
+        <tr><td>Prazo</td><td>${n} meses${carencia > 0 ? ` (+ ${carencia} de carência)` : ''}</td></tr>
+        <tr><td>Parcela Mensal (Price)</td><td><strong>R$ ${fmt(PMT)}</strong></td></tr>
+        <tr><td>Total Pago</td><td>R$ ${fmt(totalPago)}</td></tr>
+        <tr><td>Total de Juros</td><td style="color:#e63946">R$ ${fmt(totalJuros)}</td></tr>
+        <tr><td>Custo Efetivo Total</td><td>${((totalJuros / P) * 100).toFixed(2)}% sobre o principal</td></tr>
+      `;
+
+      // Gráfico principal vs juros
+      const barras = [
+        { label: 'Principal',    valor: P,          cor: '#2d6a4f' },
+        { label: 'Juros Totais', valor: totalJuros, cor: '#e63946' },
+      ];
+      document.getElementById('grafico-fin').innerHTML = barras.map(b => {
+        const pct = (b.valor / totalPago * 100).toFixed(1);
+        return `
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:3px;">
+              <span>${b.label}</span><span>R$ ${fmt(b.valor)} (${pct}%)</span>
+            </div>
+            <div style="background:var(--borda); border-radius:4px; height:18px; overflow:hidden;">
+              <div style="width:${pct}%; background:${b.cor}; height:100%; border-radius:4px; transition:width 0.6s ease;"></div>
+            </div>
+          </div>`;
+      }).join('');
+
+      // Tabela de amortização
+      let saldo = P;
+      let linhas = '';
+
+      // Período de carência: só juros, sem amortizar
+      for (let m = 1; m <= carencia; m++) {
+        const juros = saldo * i;
+        linhas += `<tr>
+          <td>C${m}</td><td>R$ ${fmt(juros)}</td>
+          <td>R$ ${fmt(juros)}</td><td>R$ 0,00</td><td>R$ ${fmt(saldo)}</td>
+        </tr>`;
+      }
+
+      // Parcelas normais com amortização
+      for (let m = 1; m <= n; m++) {
+        const juros = saldo * i;
+        const amort = PMT - juros;
+        saldo -= amort;
+        if (saldo < 0.01) saldo = 0;
+        linhas += `<tr>
+          <td>${m}</td><td>R$ ${fmt(PMT)}</td>
+          <td>R$ ${fmt(juros)}</td><td>R$ ${fmt(amort)}</td><td>R$ ${fmt(saldo)}</td>
+        </tr>`;
+      }
+
+      document.getElementById('tabela-amort').innerHTML = linhas;
+      document.getElementById('resultado-fin').classList.add('visivel');
+    }
+
+    // Formata número em padrão pt-BR
+    function fmt(n) {
+      return Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+  </script>
+
+</body>
+</html>
