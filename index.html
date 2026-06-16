@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCalc Web — Painel Principal</title>
+
+  <!-- Google Fonts: Playfair Display (títulos) + Inter (corpo) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <header class="navbar">
+    <div class="container">
+      <span class="logo">🌱 AgroCalc</span>
+      <nav>
+        <a href="index.html" class="ativo">Início</a>
+        <a href="custo.html">Custo</a>
+        <a href="financiamento.html">Financiamento</a>
+        <a href="conversor.html">Conversor</a>
+        <a href="talhoes.html">Talhões</a>
+        <a href="blend.html">Blend NPK</a>
+        <!-- Botão que ativa/desativa dark mode -->
+        <button id="btn-dark" onclick="alternarDark()">🌙 Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ========== HERO ========== -->
+  <section class="hero">
+    <div class="container anima">
+      <h1>AgroCalc Web</h1>
+      <p>Sistema integrado de cálculos para o agronegócio — custo de produção, financiamento, conversão de dados e muito mais.</p>
+      <a href="#modulos" class="btn btn-primario">Ver Módulos ↓</a>
+    </div>
+  </section>
+
+  <!-- ========== GRID DE MÓDULOS ========== -->
+  <main class="container" id="modulos">
+    <section class="secao">
+      <h2 class="secao-titulo">Módulos Disponíveis</h2>
+
+      <div class="grid-modulos">
+
+        <!-- Módulo 1: Custo de Produção -->
+        <div class="card-modulo anima">
+          <span class="icone">🌾</span>
+          <h3>Calculadora de Custo</h3>
+          <p>Calcula o custo de produção por hectare usando função afim. Insira insumos, mão de obra e área plantada.</p>
+          <a href="custo.html" class="btn btn-primario">Acessar</a>
+        </div>
+
+        <!-- Módulo 2: Financiamento Agrícola -->
+        <div class="card-modulo anima">
+          <span class="icone">💰</span>
+          <h3>Financiamento Agrícola</h3>
+          <p>Simula parcelas com juros compostos. Visualize o total pago e os juros acumulados ao longo do tempo.</p>
+          <a href="financiamento.html" class="btn btn-primario">Acessar</a>
+        </div>
+
+        <!-- Módulo 3: Conversor de Dados -->
+        <div class="card-modulo anima">
+          <span class="icone">🔢</span>
+          <h3>Conversor de Dados</h3>
+          <p>Converte números entre bases decimal, binária e hexadecimal. Inclui simulador de porta lógica AND/OR/NOT.</p>
+          <a href="conversor.html" class="btn btn-primario">Acessar</a>
+        </div>
+
+        <!-- Módulo 4: Mapa de Talhões -->
+        <div class="card-modulo anima">
+          <span class="icone">🗺️</span>
+          <h3>Mapa de Talhões</h3>
+          <p>Matriz de produtividade por talhão. Calcula médias, identifica o melhor e o pior setor da fazenda.</p>
+          <a href="talhoes.html" class="btn btn-primario">Acessar</a>
+        </div>
+
+        <!-- Módulo 5: Blend de Fertilizante -->
+        <div class="card-modulo anima">
+          <span class="icone">🧪</span>
+          <h3>Blend de Fertilizante</h3>
+          <p>Resolve o sistema linear NPK para encontrar a combinação ideal de fertilizantes conforme a necessidade da cultura.</p>
+          <a href="blend.html" class="btn btn-primario">Acessar</a>
+        </div>
+
+        <!-- Card informativo sobre o projeto -->
+        <div class="card-modulo anima">
+          <span class="icone">📚</span>
+          <h3>Sobre o Projeto</h3>
+          <p>Projeto Integrador — HTML/CSS, Introdução à Computação e Matemática Aplicada. Desenvolvido para o agronegócio.</p>
+          <a href="#glossario" class="btn btn-secundario">Ver Glossário</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== LINHA DO TEMPO ========== -->
+    <section class="secao" id="timeline">
+      <h2 class="secao-titulo">Linha do Tempo da Computação no Agronegócio</h2>
+
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <span class="ano">1970</span>
+          <h3>Primeiros Sistemas de Gestão Rural</h3>
+          <p>Surgem os primeiros softwares de controle de estoque e produção em fazendas de grande porte nos EUA.</p>
+        </div>
+
+        <div class="timeline-item">
+          <span class="ano">1985</span>
+          <h3>Computadores Pessoais na Agricultura</h3>
+          <p>O PC chega às propriedades rurais, permitindo planilhas de custo e controle financeiro básico.</p>
+        </div>
+
+        <div class="timeline-item">
+          <span class="ano">1994</span>
+          <h3>Agricultura de Precisão</h3>
+          <p>GPS e sensores começam a ser usados para mapear produtividade por talhão e otimizar o uso de insumos.</p>
+        </div>
+
+        <div class="timeline-item">
+          <span class="ano">2005</span>
+          <h3>Sistemas ERP Rurais</h3>
+          <p>Plataformas integradas de gestão agrícola reúnem finanças, estoque, clima e produção em um único sistema.</p>
+        </div>
+
+        <div class="timeline-item">
+          <span class="ano">2015</span>
+          <h3>Big Data e Sensoriamento Remoto</h3>
+          <p>Drones, satélites e IoT passam a gerar grandes volumes de dados para análise preditiva de safras.</p>
+        </div>
+
+        <div class="timeline-item">
+          <span class="ano">2024</span>
+          <h3>Inteligência Artificial no Campo</h3>
+          <p>Modelos de IA auxiliam na previsão de doenças, otimização de irrigação e recomendação de fertilizantes.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== GLOSSÁRIO ========== -->
+    <section class="secao" id="glossario">
+      <h2 class="secao-titulo">Glossário Agrícola</h2>
+
+      <dl class="glossario">
+        <dt>Hectare (ha)</dt>
+        <dd>Unidade de área equivalente a 10.000 m². É a medida padrão para áreas agrícolas no Brasil.</dd>
+
+        <dt>Talhão</dt>
+        <dd>Subdivisão de uma propriedade rural delimitada para fins de manejo, plantio ou colheita independente.</dd>
+
+        <dt>NPK</dt>
+        <dd>Sigla para os três macronutrientes essenciais às plantas: Nitrogênio (N), Fósforo (P) e Potássio (K).</dd>
+
+        <dt>Blend de Fertilizante</dt>
+        <dd>Mistura personalizada de fertilizantes formulada para atender exatamente as necessidades nutricionais do solo.</dd>
+
+        <dt>Custo de Produção</dt>
+        <dd>Soma de todos os gastos envolvidos no cultivo de uma cultura, dividido pela área plantada (R$/ha).</dd>
+
+        <dt>Juros Compostos</dt>
+        <dd>Modalidade de juros em que o valor acumulado do período anterior serve de base para o cálculo do período seguinte.</dd>
+
+        <dt>Sistema Linear</dt>
+        <dd>Conjunto de equações de primeiro grau com múltiplas variáveis, resolvido para encontrar valores que satisfazem todas simultaneamente.</dd>
+
+        <dt>Binário</dt>
+        <dd>Sistema numérico de base 2, que utiliza apenas os dígitos 0 e 1. É a linguagem fundamental dos computadores.</dd>
+
+        <dt>Hexadecimal</dt>
+        <dd>Sistema numérico de base 16, usando dígitos de 0 a 9 e letras de A a F. Muito usado em computação para representar endereços e cores.</dd>
+
+        <dt>Porta Lógica</dt>
+        <dd>Circuito eletrônico básico que realiza operações booleanas (AND, OR, NOT) sobre sinais binários.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer>
+    <div class="container">
+      <p>AgroCalc Web &copy; 2025 — Projeto Integrador | HTML/CSS · Computação · Matemática Aplicada</p>
+    </div>
+  </footer>
+
+  <!-- ========== SCRIPT: Dark Mode ========== -->
+  <script>
+    // Verifica se o usuário já tinha preferência salva no localStorage
+    if (localStorage.getItem('dark') === 'true') {
+      document.body.classList.add('dark');
+      document.getElementById('btn-dark').textContent = '☀️ Light';
+    }
+
+    // Alterna entre dark e light mode
+    function alternarDark() {
+      const ativo = document.body.classList.toggle('dark');
+      const btn = document.getElementById('btn-dark');
+      btn.textContent = ativo ? '☀️ Light' : '🌙 Dark';
+      // Salva preferência para persistir entre páginas
+      localStorage.setItem('dark', ativo);
+    }
+  </script>
+
+</body>
+</html>
