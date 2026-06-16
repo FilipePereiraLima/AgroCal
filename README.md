@@ -1,6 +1,6 @@
 # 🌱 AgroCalc Web
 
-> Sistema integrado de cálculos para o agronegócio — Projeto Integrador 2025
+> Sistema integrado de cálculos para o agronegócio — Projeto Integrador 2026
 
 **Acesse online:** [https://[seu-usuario].github.io/agrocal](https://[seu-usuario].github.io/agrocal)
 
@@ -88,7 +88,7 @@ agrocal/
 
 ## 🏫 Informações Acadêmicas
 
-- **Aluno:** [Seu Nome Completo]
-- **Curso:** [Seu Curso] | **Período:** [Seu Período]
+- **Aluno:** Filipe Pereira Lima
+- **Curso:** TADS | **Período:** 3 semestre
 - **Professores:** Silvério Luiz de Sousa · Matheus Couto · Patrícia Freitas
-- **Ano:** 2025
+- **Ano:** 2026
