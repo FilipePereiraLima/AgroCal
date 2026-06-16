@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCalc — Calculadora de Custo</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <header class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">🌱 AgroCalc</a>
+      <nav>
+        <a href="index.html">Início</a>
+        <a href="custo.html" class="ativo">Custo</a>
+        <a href="financiamento.html">Financiamento</a>
+        <a href="conversor.html">Conversor</a>
+        <a href="talhoes.html">Talhões</a>
+        <a href="blend.html">Blend NPK</a>
+        <button id="btn-dark" onclick="alternarDark()">🌙 Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ========== CONTEÚDO PRINCIPAL ========== -->
+  <main class="container">
+    <section class="secao">
+      <h2 class="secao-titulo">🌾 Calculadora de Custo de Produção</h2>
+
+      <!-- Explicação da fórmula usada (exigido pelo roteiro) -->
+      <p>
+        O custo total é calculado por uma <strong>função afim</strong>:
+        <code>C(x) = (insumos + mão de obra) × x + custos_fixos</code>,
+        onde <strong>x</strong> é a área em hectares.
+      </p>
+      <p>O custo por hectare é obtido dividindo o custo total pela área plantada.</p>
+
+      <!-- ===== FORMULÁRIO DE ENTRADA ===== -->
+      <div class="card-modulo" style="max-width: 560px; margin-top: 2rem;">
+
+        <!-- Custo de insumos por hectare -->
+        <div class="form-grupo">
+          <label for="insumos">Custo de Insumos (R$/ha)</label>
+          <input type="number" id="insumos" placeholder="Ex: 1200" min="0" step="0.01" />
+        </div>
+
+        <!-- Custo de mão de obra por hectare -->
+        <div class="form-grupo">
+          <label for="mao-obra">Mão de Obra (R$/ha)</label>
+          <input type="number" id="mao-obra" placeholder="Ex: 400" min="0" step="0.01" />
+        </div>
+
+        <!-- Custos fixos totais (independem da área) -->
+        <div class="form-grupo">
+          <label for="fixos">Custos Fixos Totais (R$)</label>
+          <input type="number" id="fixos" placeholder="Ex: 3000" min="0" step="0.01" />
+        </div>
+
+        <!-- Área plantada em hectares -->
+        <div class="form-grupo">
+          <label for="area">Área Plantada (ha)</label>
+          <input type="number" id="area" placeholder="Ex: 10" min="0.1" step="0.1" />
+        </div>
+
+        <!-- Preço de venda por saca (opcional, para calcular ponto de equilíbrio) -->
+        <div class="form-grupo">
+          <label for="preco-saca">Preço de Venda por Saca (R$) <small>— opcional</small></label>
+          <input type="number" id="preco-saca" placeholder="Ex: 85" min="0" step="0.01" />
+        </div>
+
+        <!-- Produtividade esperada (opcional) -->
+        <div class="form-grupo">
+          <label for="produtividade">Produtividade Esperada (sacas/ha) <small>— opcional</small></label>
+          <input type="number" id="produtividade" placeholder="Ex: 60" min="0" step="0.1" />
+        </div>
+
+        <button class="btn btn-primario" onclick="calcularCusto()">Calcular</button>
+      </div>
+
+      <!-- ===== CAIXA DE RESULTADO ===== -->
+      <div class="resultado" id="resultado-custo">
+        <h3>📊 Resultado</h3>
+
+        <!-- Tabela com os valores calculados -->
+        <div class="tabela-wrap" style="margin-top: 1rem;">
+          <table>
+            <thead>
+              <tr>
+                <th>Indicador</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-resultado">
+              <!-- Preenchido pelo JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Gráfico simples de barras em CSS (sem biblioteca externa) -->
+        <div style="margin-top: 1.5rem;">
+          <h3>📈 Composição do Custo</h3>
+          <div id="grafico-barras" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.6rem;"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========== SEÇÃO EXPLICATIVA ========== -->
+    <section class="secao">
+      <h2 class="secao-titulo">Como funciona a Função Afim?</h2>
+      <p>
+        Uma <strong>função afim</strong> tem a forma <code>f(x) = ax + b</code>, onde:
+      </p>
+      <ul style="margin: 0.5rem 0 1rem 1.5rem; color: var(--texto-secundario); line-height: 2;">
+        <li><strong>a</strong> = coeficiente angular — representa o custo variável por hectare (insumos + mão de obra)</li>
+        <li><strong>b</strong> = coeficiente linear — representa os custos fixos (independem da área)</li>
+        <li><strong>x</strong> = área plantada em hectares</li>
+      </ul>
+      <p>
+        Quanto maior a área, mais os custos fixos são diluídos, reduzindo o custo médio por hectare.
+        Esse é o princípio da <strong>economia de escala</strong> na agricultura.
+      </p>
+    </section>
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer>
+    <div class="container">
+      <p>AgroCalc Web &copy; 2025 — Projeto Integrador | HTML/CSS · Computação · Matemática Aplicada</p>
+    </div>
+  </footer>
+
+  <!-- ========== SCRIPTS ========== -->
+  <script>
+    // --- Dark mode persistente ---
+    if (localStorage.getItem('dark') === 'true') {
+      document.body.classList.add('dark');
+      document.getElementById('btn-dark').textContent = '☀️ Light';
+    }
+    function alternarDark() {
+      const ativo = document.body.classList.toggle('dark');
+      document.getElementById('btn-dark').textContent = ativo ? '☀️ Light' : '🌙 Dark';
+      localStorage.setItem('dark', ativo);
+    }
+
+    // --- Função principal de cálculo ---
+    function calcularCusto() {
+      // Leitura dos valores do formulário
+      const insumos      = parseFloat(document.getElementById('insumos').value)      || 0;
+      const maoObra      = parseFloat(document.getElementById('mao-obra').value)     || 0;
+      const fixos        = parseFloat(document.getElementById('fixos').value)        || 0;
+      const area         = parseFloat(document.getElementById('area').value)         || 0;
+      const precoSaca    = parseFloat(document.getElementById('preco-saca').value)   || 0;
+      const produtivid   = parseFloat(document.getElementById('produtividade').value)|| 0;
+
+      // Validação básica
+      if (area <= 0) {
+        alert('Informe uma área válida (maior que 0).');
+        return;
+      }
+
+      // ---- Cálculos pela função afim: C(x) = (insumos + maoObra) * x + fixos ----
+      const custoVariavelHa = insumos + maoObra;          // coeficiente angular (a)
+      const custoTotal      = custoVariavelHa * area + fixos; // C(x) = ax + b
+      const custoHa         = custoTotal / area;           // custo médio por hectare
+
+      // Cálculos opcionais (ponto de equilíbrio e receita esperada)
+      let linhasExtras = '';
+      if (precoSaca > 0 && produtivid > 0) {
+        const receitaTotal    = precoSaca * produtivid * area;
+        const lucroEstimado   = receitaTotal - custoTotal;
+        const pontEqSacas     = custoTotal / precoSaca;   // sacas necessárias p/ cobrir custo
+        linhasExtras = `
+          <tr><td>Receita Esperada</td><td>R$ ${fmt(receitaTotal)}</td></tr>
+          <tr><td>Lucro Estimado</td><td style="color:${lucroEstimado >= 0 ? 'var(--verde-claro)' : '#e63946'}">R$ ${fmt(lucroEstimado)}</td></tr>
+          <tr><td>Ponto de Equilíbrio</td><td>${fmt(pontEqSacas)} sacas</td></tr>
+        `;
+      }
+
+      // Monta tabela de resultados
+      document.getElementById('tabela-resultado').innerHTML = `
+        <tr><td>Custo Variável (R$/ha)</td><td>R$ ${fmt(custoVariavelHa)}</td></tr>
+        <tr><td>Custos Fixos</td><td>R$ ${fmt(fixos)}</td></tr>
+        <tr><td>Custo Total — C(${area} ha)</td><td><strong>R$ ${fmt(custoTotal)}</strong></td></tr>
+        <tr><td>Custo Médio por Hectare</td><td><strong>R$ ${fmt(custoHa)}/ha</strong></td></tr>
+        ${linhasExtras}
+      `;
+
+      // Renderiza gráfico de barras em CSS
+      renderizarGrafico(insumos * area, maoObra * area, fixos, custoTotal);
+
+      // Exibe a caixa de resultado
+      document.getElementById('resultado-custo').classList.add('visivel');
+    }
+
+    // --- Renderiza barras proporcionais aos valores ---
+    function renderizarGrafico(totalInsumos, totalMaoObra, totalFixos, total) {
+      const container = document.getElementById('grafico-barras');
+      const itens = [
+        { label: 'Insumos',      valor: totalInsumos,  cor: '#2d6a4f' },
+        { label: 'Mão de Obra',  valor: totalMaoObra,  cor: '#52b788' },
+        { label: 'Custos Fixos', valor: totalFixos,    cor: '#a37c27' },
+      ];
+
+      container.innerHTML = itens.map(item => {
+        const pct = total > 0 ? (item.valor / total * 100).toFixed(1) : 0;
+        return `
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:3px;">
+              <span>${item.label}</span>
+              <span>R$ ${fmt(item.valor)} (${pct}%)</span>
+            </div>
+            <div style="background:var(--borda); border-radius:4px; height:18px; overflow:hidden;">
+              <div style="width:${pct}%; background:${item.cor}; height:100%; border-radius:4px;
+                          transition: width 0.6s ease;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- Formata número como moeda brasileira ---
+    function fmt(n) {
+      return Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+  </script>
+
+</body>
+</html>
