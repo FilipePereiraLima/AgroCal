@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCalc — Conversor de Dados</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <header class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">🌱 AgroCalc</a>
+      <nav>
+        <a href="index.html">Início</a>
+        <a href="custo.html">Custo</a>
+        <a href="financiamento.html">Financiamento</a>
+        <a href="conversor.html" class="ativo">Conversor</a>
+        <a href="talhoes.html">Talhões</a>
+        <a href="blend.html">Blend NPK</a>
+        <button id="btn-dark" onclick="alternarDark()">🌙 Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ========== SEÇÃO 1: CONVERSOR DE BASES ========== -->
+    <section class="secao">
+      <h2 class="secao-titulo">🔢 Conversor de Bases Numéricas</h2>
+      <p>Converta números entre os sistemas <strong>Decimal</strong>, <strong>Binário</strong> e <strong>Hexadecimal</strong> — as três bases mais usadas em computação.</p>
+
+      <div class="card-modulo" style="max-width:560px; margin-top:2rem;">
+
+        <!-- Valor de entrada -->
+        <div class="form-grupo">
+          <label for="valor-conv">Valor</label>
+          <input type="text" id="valor-conv" placeholder="Ex: 255" oninput="converter()" />
+        </div>
+
+        <!-- Base de origem -->
+        <div class="form-grupo">
+          <label for="base-origem">Base de origem</label>
+          <select id="base-origem" onchange="converter()">
+            <option value="10">Decimal (base 10)</option>
+            <option value="2">Binário (base 2)</option>
+            <option value="16">Hexadecimal (base 16)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Resultado da conversão -->
+      <div class="resultado visivel" id="resultado-conv" style="max-width:560px; margin-top:1.5rem; display:block;">
+        <h3>Resultado da Conversão</h3>
+        <div class="tabela-wrap" style="margin-top:1rem;">
+          <table>
+            <thead><tr><th>Sistema</th><th>Valor</th></tr></thead>
+            <tbody id="tabela-conv">
+              <tr><td colspan="2" style="text-align:center; color:var(--texto-secundario);">Digite um valor acima</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Visualização bit a bit do binário -->
+        <div id="bits-visual" style="margin-top:1.2rem;"></div>
+      </div>
+    </section>
+
+    <!-- ========== SEÇÃO 2: PORTA LÓGICA ========== -->
+    <section class="secao">
+      <h2 class="secao-titulo">⚡ Simulador de Porta Lógica</h2>
+      <p>Selecione uma porta lógica e dois valores binários (0 ou 1) para ver o resultado da operação booleana.</p>
+
+      <div class="card-modulo" style="max-width:560px; margin-top:2rem;">
+
+        <!-- Tipo de porta -->
+        <div class="form-grupo">
+          <label for="porta">Porta Lógica</label>
+          <select id="porta" onchange="simularPorta()">
+            <option value="AND">AND — saída 1 apenas se ambas entradas forem 1</option>
+            <option value="OR">OR  — saída 1 se ao menos uma entrada for 1</option>
+            <option value="NOT">NOT — inverte a entrada A (usa só A)</option>
+            <option value="NAND">NAND — inverso da AND</option>
+            <option value="NOR">NOR  — inverso da OR</option>
+            <option value="XOR">XOR  — saída 1 se entradas forem diferentes</option>
+          </select>
+        </div>
+
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+          <!-- Entrada A -->
+          <div class="form-grupo" style="flex:1; min-width:120px;">
+            <label for="entrada-a">Entrada A</label>
+            <select id="entrada-a" onchange="simularPorta()">
+              <option value="0">0 (FALSO)</option>
+              <option value="1">1 (VERDADEIRO)</option>
+            </select>
+          </div>
+
+          <!-- Entrada B (oculta para NOT) -->
+          <div class="form-grupo" style="flex:1; min-width:120px;" id="grupo-b">
+            <label for="entrada-b">Entrada B</label>
+            <select id="entrada-b" onchange="simularPorta()">
+              <option value="0">0 (FALSO)</option>
+              <option value="1">1 (VERDADEIRO)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Visualização da porta -->
+        <div id="porta-visual" style="margin-top:1rem; padding:1.2rem; background:var(--fundo); border-radius:8px; text-align:center; font-size:1.4rem; font-weight:700; border:2px solid var(--borda);">
+          <!-- Preenchido pelo JS -->
+        </div>
+      </div>
+
+      <!-- Tabela verdade completa -->
+      <div style="max-width:560px; margin-top:1.5rem;">
+        <h3 style="margin-bottom:0.75rem;">Tabela Verdade</h3>
+        <div class="tabela-wrap">
+          <table id="tabela-verdade"></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SEÇÃO EXPLICATIVA ========== -->
+    <section class="secao">
+      <h2 class="secao-titulo">Por que bases numéricas importam?</h2>
+      <p>
+        Computadores armazenam e processam informações em <strong>binário</strong> (base 2) pois transistores só reconhecem dois estados: ligado (1) e desligado (0).
+        O <strong>hexadecimal</strong> (base 16) é usado como atalho para representar binários longos de forma mais compacta — 1 dígito hex equivale a 4 bits.
+      </p>
+      <p>
+        No agronegócio digital, endereços IP de sensores IoT, códigos de cor em dashboards e identificadores de talhões em sistemas GIS são exemplos diretos do uso dessas bases.
+      </p>
+    </section>
+
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer>
+    <div class="container">
+      <p>AgroCalc Web &copy; 2025 — Projeto Integrador | HTML/CSS · Computação · Matemática Aplicada</p>
+    </div>
+  </footer>
+
+  <script>
+    // --- Dark mode persistente ---
+    if (localStorage.getItem('dark') === 'true') {
+      document.body.classList.add('dark');
+      document.getElementById('btn-dark').textContent = '☀️ Light';
+    }
+    function alternarDark() {
+      const ativo = document.body.classList.toggle('dark');
+      document.getElementById('btn-dark').textContent = ativo ? '☀️ Light' : '🌙 Dark';
+      localStorage.setItem('dark', ativo);
+    }
+
+    // ============================================================
+    // CONVERSOR DE BASES
+    // ============================================================
+    function converter() {
+      const raw    = document.getElementById('valor-conv').value.trim().toUpperCase();
+      const base   = parseInt(document.getElementById('base-origem').value);
+      const tbody  = document.getElementById('tabela-conv');
+      const visual = document.getElementById('bits-visual');
+
+      if (!raw) {
+        tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;color:var(--texto-secundario);">Digite um valor acima</td></tr>';
+        visual.innerHTML = '';
+        return;
+      }
+
+      // Converte para decimal primeiro, depois para as outras bases
+      const decimal = parseInt(raw, base);
+
+      if (isNaN(decimal) || decimal < 0) {
+        tbody.innerHTML = '<tr><td colspan="2" style="color:#e63946; text-align:center;">Valor inválido para a base selecionada</td></tr>';
+        visual.innerHTML = '';
+        return;
+      }
+
+      const binario = decimal.toString(2);
+      const hexa    = decimal.toString(16).toUpperCase();
+
+      tbody.innerHTML = `
+        <tr><td>Decimal (base 10)</td><td><strong>${decimal}</strong></td></tr>
+        <tr><td>Binário (base 2)</td><td><strong>${binario}</strong></td></tr>
+        <tr><td>Hexadecimal (base 16)</td><td><strong>${hexa}</strong></td></tr>
+        <tr><td>Octal (base 8)</td><td>${decimal.toString(8)}</td></tr>
+      `;
+
+      // Visualização dos bits individuais (8 bits mínimo, preenchendo com zeros)
+      const bits = binario.padStart(Math.max(8, binario.length % 8 === 0 ? binario.length : binario.length + (8 - binario.length % 8)), '0');
+      visual.innerHTML = `
+        <p style="font-size:0.85rem; color:var(--texto-secundario); margin-bottom:0.5rem;">Representação em bits (${bits.length}-bit):</p>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          ${bits.split('').map((b, i) => `
+            <div style="
+              width:36px; height:36px; border-radius:6px; display:flex; align-items:center;
+              justify-content:center; font-weight:700; font-size:1rem;
+              background:${b === '1' ? 'var(--verde-campo)' : 'var(--borda)'};
+              color:${b === '1' ? '#fff' : 'var(--texto-secundario)'};
+              border: 1px solid var(--borda);
+            ">${b}</div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // ============================================================
+    // SIMULADOR DE PORTA LÓGICA
+    // ============================================================
+    function simularPorta() {
+      const porta = document.getElementById('porta').value;
+      const A     = parseInt(document.getElementById('entrada-a').value);
+      const B     = parseInt(document.getElementById('entrada-b').value);
+
+      // NOT usa apenas A — esconde campo B
+      const grupoB = document.getElementById('grupo-b');
+      grupoB.style.opacity = porta === 'NOT' ? '0.3' : '1';
+      grupoB.style.pointerEvents = porta === 'NOT' ? 'none' : 'auto';
+
+      // Calcula saída conforme a porta selecionada
+      let saida;
+      switch (porta) {
+        case 'AND':  saida = A & B;       break;
+        case 'OR':   saida = A | B;       break;
+        case 'NOT':  saida = A === 1 ? 0 : 1; break;
+        case 'NAND': saida = (A & B) === 1 ? 0 : 1; break;
+        case 'NOR':  saida = (A | B) === 1 ? 0 : 1; break;
+        case 'XOR':  saida = A ^ B;       break;
+      }
+
+      // Exibe resultado visual
+      const corSaida = saida === 1 ? 'var(--verde-claro)' : '#e63946';
+      const entradas = porta === 'NOT' ? `A = ${A}` : `A = ${A}  |  B = ${B}`;
+      document.getElementById('porta-visual').innerHTML = `
+        <div style="font-size:0.9rem; font-weight:400; color:var(--texto-secundario); margin-bottom:0.5rem;">${entradas}</div>
+        <div style="font-size:1rem; margin-bottom:0.4rem;">${porta}</div>
+        <div style="font-size:2rem; color:${corSaida};">Saída = ${saida}</div>
+        <div style="font-size:0.85rem; color:${corSaida}; margin-top:0.3rem;">${saida === 1 ? '✅ VERDADEIRO' : '❌ FALSO'}</div>
+      `;
+
+      // Gera tabela verdade completa para a porta selecionada
+      gerarTabelaVerdade(porta);
+    }
+
+    // Gera tabela verdade de todas as combinações possíveis
+    function gerarTabelaVerdade(porta) {
+      const A_atual = parseInt(document.getElementById('entrada-a').value);
+      const B_atual = parseInt(document.getElementById('entrada-b').value);
+
+      const entradas = porta === 'NOT'
+        ? [[0], [1]]
+        : [[0,0],[0,1],[1,0],[1,1]];
+
+      const cabecalho = porta === 'NOT'
+        ? '<tr><th>A</th><th>NOT A</th></tr>'
+        : `<tr><th>A</th><th>B</th><th>${porta}</th></tr>`;
+
+      const linhas = entradas.map(([a, b]) => {
+        let s;
+        switch (porta) {
+          case 'AND':  s = a & b;             break;
+          case 'OR':   s = a | b;             break;
+          case 'NOT':  s = a === 1 ? 0 : 1;  break;
+          case 'NAND': s = (a & b) === 1 ? 0 : 1; break;
+          case 'NOR':  s = (a | b) === 1 ? 0 : 1; break;
+          case 'XOR':  s = a ^ b;             break;
+        }
+        // Destaca a linha atual
+        const atual = (porta === 'NOT') ? (a === A_atual) : (a === A_atual && b === B_atual);
+        const estilo = atual ? 'background:rgba(82,183,136,0.15); font-weight:600;' : '';
+        const cols = porta === 'NOT'
+          ? `<td>${a}</td><td style="color:${s===1?'var(--verde-claro)':'#e63946'}">${s}</td>`
+          : `<td>${a}</td><td>${b}</td><td style="color:${s===1?'var(--verde-claro)':'#e63946'}">${s}</td>`;
+        return `<tr style="${estilo}">${cols}</tr>`;
+      }).join('');
+
+      document.getElementById('tabela-verdade').innerHTML = `<thead>${cabecalho}</thead><tbody>${linhas}</tbody>`;
+    }
+
+    // Inicializa os módulos ao carregar a página
+    converter();
+    simularPorta();
+  </script>
+
+</body>
+</html>
