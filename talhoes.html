@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCalc — Mapa de Talhões</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Grade visual da matriz de talhões */
+    .matriz-grid {
+      display: grid;
+      gap: 6px;
+      margin-top: 1.5rem;
+    }
+    .celula-talhao {
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: default;
+      transition: transform 0.2s;
+      min-height: 72px;
+      border: 2px solid transparent;
+    }
+    .celula-talhao:hover { transform: scale(1.05); }
+    .celula-talhao .label { font-size: 0.68rem; font-weight: 400; opacity: 0.85; margin-bottom: 2px; }
+    .celula-talhao.melhor { border-color: #fff; box-shadow: 0 0 0 3px #2d6a4f; }
+    .celula-talhao.pior   { border-color: #fff; box-shadow: 0 0 0 3px #e63946; }
+
+    /* Input dentro da célula editável */
+    .celula-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+      color: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <header class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">🌱 AgroCalc</a>
+      <nav>
+        <a href="index.html">Início</a>
+        <a href="custo.html">Custo</a>
+        <a href="financiamento.html">Financiamento</a>
+        <a href="conversor.html">Conversor</a>
+        <a href="talhoes.html" class="ativo">Talhões</a>
+        <a href="blend.html">Blend NPK</a>
+        <button id="btn-dark" onclick="alternarDark()">🌙 Dark</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="secao">
+      <h2 class="secao-titulo">🗺️ Mapa de Produtividade por Talhão</h2>
+      <p>
+        Preencha a matriz com a produtividade de cada talhão (sacas/ha). O sistema calcula
+        <strong>média geral</strong>, <strong>média por linha</strong>, e destaca o
+        <strong>melhor</strong> e o <strong>pior</strong> talhão automaticamente.
+      </p>
+
+      <!-- Configuração da grade -->
+      <div class="card-modulo" style="max-width:400px; margin-top:1.5rem;">
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+          <div class="form-grupo" style="flex:1; min-width:120px;">
+            <label for="n-linhas">Linhas (talhões)</label>
+            <select id="n-linhas" onchange="gerarMatriz()">
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+          <div class="form-grupo" style="flex:1; min-width:120px;">
+            <label for="n-cols">Colunas (setores)</label>
+            <select id="n-cols" onchange="gerarMatriz()">
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4" selected>4</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-secundario" onclick="preencherExemplo()">Preencher Exemplo</button>
+      </div>
+
+      <!-- Grade editável de talhões -->
+      <div id="container-matriz" style="max-width:700px; margin-top:1rem; overflow-x:auto;"></div>
+
+      <button class="btn btn-primario" style="margin-top:1.2rem;" onclick="calcularMatriz()">Calcular Produtividade</button>
+
+      <!-- Resultado -->
+      <div class="resultado" id="resultado-talhao" style="margin-top:1.5rem;">
+        <h3>📊 Análise da Matriz</h3>
+        <div class="tabela-wrap" style="margin-top:1rem;">
+          <table>
+            <thead><tr><th>Indicador</th><th>Valor</th></tr></thead>
+            <tbody id="tabela-talhao"></tbody>
+          </table>
+        </div>
+
+        <!-- Mapa visual colorido por produtividade -->
+        <div style="margin-top:1.5rem;">
+          <h3>🎨 Mapa de Calor</h3>
+          <p style="font-size:0.85rem;">Verde escuro = alta produtividade · Vermelho = baixa produtividade</p>
+          <div id="mapa-calor" class="matriz-grid" style="margin-top:1rem;"></div>
+          <div style="margin-top:0.8rem; display:flex; gap:1rem; font-size:0.8rem; flex-wrap:wrap;">
+            <span>🟩 Melhor talhão</span>
+            <span>🟥 Pior talhão</span>
+          </div>
+        </div>
+
+        <!-- Médias por linha -->
+        <div style="margin-top:1.5rem;">
+          <h3>📋 Média por Linha de Talhão</h3>
+          <div class="tabela-wrap" style="margin-top:1rem;">
+            <table>
+              <thead><tr><th>Linha</th><th>Média (sc/ha)</th><th>Status</th></tr></thead>
+              <tbody id="tabela-linhas"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Explicação sobre matrizes -->
+    <section class="secao">
+      <h2 class="secao-titulo">Matrizes na Agricultura de Precisão</h2>
+      <p>
+        Uma <strong>matriz</strong> é uma tabela de números organizada em linhas e colunas.
+        No contexto agrícola, cada célula representa a produtividade de um setor específico da fazenda,
+        permitindo análise espacial da lavoura de forma estruturada — equivalente ao que o NumPy faz em Python.
+      </p>
+      <p>
+        A <strong>média geral</strong> é calculada somando todos os valores e dividindo pelo total de células:
+        <code>μ = Σ(x) / (linhas × colunas)</code>.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>AgroCalc Web &copy; 2025 — Projeto Integrador | HTML/CSS · Computação · Matemática Aplicada</p>
+    </div>
+  </footer>
+
+  <script>
+    // --- Dark mode persistente ---
+    if (localStorage.getItem('dark') === 'true') {
+      document.body.classList.add('dark');
+      document.getElementById('btn-dark').textContent = '☀️ Light';
+    }
+    function alternarDark() {
+      const ativo = document.body.classList.toggle('dark');
+      document.getElementById('btn-dark').textContent = ativo ? '☀️ Light' : '🌙 Dark';
+      localStorage.setItem('dark', ativo);
+    }
+
+    // --- Gera a grade de inputs editáveis ---
+    function gerarMatriz() {
+      const linhas = parseInt(document.getElementById('n-linhas').value);
+      const cols   = parseInt(document.getElementById('n-cols').value);
+      const cont   = document.getElementById('container-matriz');
+
+      // Cria grid CSS com N colunas
+      cont.innerHTML = `<div class="matriz-grid" id="grade-inputs"
+        style="grid-template-columns: repeat(${cols}, 1fr); max-width:${cols * 110}px;">`;
+
+      const grade = document.getElementById('grade-inputs');
+
+      // Cria um input para cada célula da matriz
+      for (let i = 0; i < linhas; i++) {
+        for (let j = 0; j < cols; j++) {
+          const div = document.createElement('div');
+          div.style.cssText = `
+            background: var(--fundo-card); border: 1px solid var(--borda);
+            border-radius: 8px; padding: 0.6rem; text-align: center;
+          `;
+          div.innerHTML = `
+            <div class="label" style="color:var(--texto-secundario);">T${i+1}-S${j+1}</div>
+            <input type="number" class="celula-input" id="cel-${i}-${j}"
+              placeholder="sc/ha" min="0" step="0.1"
+              style="color:var(--texto); margin-top:4px;" />
+          `;
+          grade.appendChild(div);
+        }
+      }
+    }
+
+    // --- Preenche com valores de exemplo ---
+    function preencherExemplo() {
+      const linhas = parseInt(document.getElementById('n-linhas').value);
+      const cols   = parseInt(document.getElementById('n-cols').value);
+      // Valores de exemplo variados para demonstração
+      const exemplo = [
+        [58, 62, 55, 70],
+        [45, 68, 72, 60],
+        [80, 53, 48, 65],
+        [61, 74, 58, 77],
+        [50, 66, 71, 59],
+      ];
+      for (let i = 0; i < linhas; i++) {
+        for (let j = 0; j < cols; j++) {
+          const el = document.getElementById(`cel-${i}-${j}`);
+          if (el) el.value = exemplo[i]?.[j] ?? 60;
+        }
+      }
+    }
+
+    // --- Calcula estatísticas da matriz ---
+    function calcularMatriz() {
+      const linhas = parseInt(document.getElementById('n-linhas').value);
+      const cols   = parseInt(document.getElementById('n-cols').value);
+
+      // Lê todos os valores da matriz
+      const matriz = [];
+      for (let i = 0; i < linhas; i++) {
+        const linha = [];
+        for (let j = 0; j < cols; j++) {
+          const val = parseFloat(document.getElementById(`cel-${i}-${j}`)?.value) || 0;
+          linha.push(val);
+        }
+        matriz.push(linha);
+      }
+
+      // Achata a matriz para calcular stats globais
+      const todos   = matriz.flat();
+      const soma    = todos.reduce((a, b) => a + b, 0);
+      const media   = soma / todos.length;
+      const maximo  = Math.max(...todos);
+      const minimo  = Math.min(...todos);
+
+      // Encontra posição do melhor e pior talhão
+      let posMelhor = { i: 0, j: 0 };
+      let posPior   = { i: 0, j: 0 };
+      for (let i = 0; i < linhas; i++) {
+        for (let j = 0; j < cols; j++) {
+          if (matriz[i][j] === maximo) posMelhor = { i, j };
+          if (matriz[i][j] === minimo) posPior   = { i, j };
+        }
+      }
+
+      // Tabela de resumo geral
+      document.getElementById('tabela-talhao').innerHTML = `
+        <tr><td>Total de Talhões</td><td>${todos.length}</td></tr>
+        <tr><td>Média Geral</td><td><strong>${media.toFixed(2)} sc/ha</strong></td></tr>
+        <tr><td>Maior Produtividade</td><td style="color:var(--verde-claro)">${maximo} sc/ha — T${posMelhor.i+1}-S${posMelhor.j+1}</td></tr>
+        <tr><td>Menor Produtividade</td><td style="color:#e63946">${minimo} sc/ha — T${posPior.i+1}-S${posPior.j+1}</td></tr>
+        <tr><td>Amplitude</td><td>${(maximo - minimo).toFixed(2)} sc/ha</td></tr>
+        <tr><td>Produção Total (se 1 ha cada)</td><td>${soma.toFixed(1)} sacas</td></tr>
+      `;
+
+      // Mapa de calor: cor proporcional ao valor (vermelho→amarelo→verde)
+      const mapaDiv = document.getElementById('mapa-calor');
+      mapaDiv.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      mapaDiv.innerHTML = '';
+
+      for (let i = 0; i < linhas; i++) {
+        for (let j = 0; j < cols; j++) {
+          const val = matriz[i][j];
+          // Normaliza entre 0 e 1 para calcular a cor
+          const norm = maximo === minimo ? 0.5 : (val - minimo) / (maximo - minimo);
+          const cor  = lerp_cor(norm); // vermelho→verde
+
+          const isMelhor = (i === posMelhor.i && j === posMelhor.j);
+          const isPior   = (i === posPior.i   && j === posPior.j);
+
+          const cel = document.createElement('div');
+          cel.className = `celula-talhao${isMelhor ? ' melhor' : ''}${isPior ? ' pior' : ''}`;
+          cel.style.background = cor;
+          cel.style.color = norm > 0.4 ? '#fff' : '#222';
+          cel.innerHTML = `
+            <span class="label">T${i+1}-S${j+1}</span>
+            <span style="font-size:1rem;">${val}</span>
+            <span class="label">sc/ha</span>
+            ${isMelhor ? '<span>⭐</span>' : ''}
+            ${isPior   ? '<span>⚠️</span>' : ''}
+          `;
+          mapaDiv.appendChild(cel);
+        }
+      }
+
+      // Médias por linha
+      let linhasHTML = '';
+      for (let i = 0; i < linhas; i++) {
+        const somaLinha  = matriz[i].reduce((a, b) => a + b, 0);
+        const mediaLinha = somaLinha / cols;
+        const status = mediaLinha >= media
+          ? `<span style="color:var(--verde-claro)">▲ Acima da média</span>`
+          : `<span style="color:#e63946">▼ Abaixo da média</span>`;
+        linhasHTML += `<tr><td>Linha ${i+1}</td><td>${mediaLinha.toFixed(2)}</td><td>${status}</td></tr>`;
+      }
+      document.getElementById('tabela-linhas').innerHTML = linhasHTML;
+
+      document.getElementById('resultado-talhao').classList.add('visivel');
+    }
+
+    // Interpola entre vermelho (#e63946) → amarelo (#a37c27) → verde (#2d6a4f)
+    function lerp_cor(t) {
+      if (t < 0.5) {
+        // vermelho → amarelo
+        const r = Math.round(230 + (163 - 230) * (t / 0.5));
+        const g = Math.round(57  + (124 - 57)  * (t / 0.5));
+        const b = Math.round(70  + (39  - 70)  * (t / 0.5));
+        return `rgb(${r},${g},${b})`;
+      } else {
+        // amarelo → verde
+        const t2 = (t - 0.5) / 0.5;
+        const r  = Math.round(163 + (45  - 163) * t2);
+        const g  = Math.round(124 + (106 - 124) * t2);
+        const b  = Math.round(39  + (79  - 39)  * t2);
+        return `rgb(${r},${g},${b})`;
+      }
+    }
+
+    // Inicializa a matriz ao carregar
+    gerarMatriz();
+  </script>
+
+</body>
+</html>
